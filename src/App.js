@@ -1,9 +1,14 @@
 import "./App.css";
-import { ComponentOne } from "./component/ComponentOne";
+import * as ComponentForNesting from "./component/LayoutMain";
 import {
-  ComponentTwo,
+  LoaderData,
   ComponentThree,
   ComponentFour,
+  DynamicSegment,
+  ComponentSix,
+  SearchParams,
+  OptionalSegment,
+  Splat_Navigate,
 } from "./component/Components";
 import {
   BrowserRouter /** does not supports data apis */,
@@ -14,21 +19,58 @@ import {
   Routes /** only use of Routes is to make a route config or routing tree (array), it looks through all its child routes to find the best match and renders that branch of the UI. it only returns one component as it is functional equivalent to useRoutes  */,
   useRoutes /** this hook is used to make a component that is functional euivalent to <Routes/> */,
   createHashRouter,
-  Router,
+  json,
 } from "react-router-dom";
 import { RoutesHook } from "./component/RoutesHooks";
 import { useEffect } from "react";
+import ErrorComponent from "./component/ErrorComponent";
 
 const router = createBrowserRouter(
   /** by default takes route config */
   createRoutesFromElements(
     /** co-relates with Routes component, returns route config */
     <Route>
-      <Route path="/" element={<ComponentOne />}>
-        <Route index element={<ComponentTwo />} />
+      <Route path="/" element={<ComponentForNesting.LayoutMain />}>
+        <Route
+          index
+          element={<LoaderData />}
+          loader={async () => {
+            // let data = await fetch(
+            //   "https://jsonplaceholder.typicode.com/todos/1"
+            // );
+            // let response = data.json();
+            // return response;
+            return fetch("https://jsonplaceholder.typicode.com/todos/1")
+              .then((data) => data.json())
+              .then((data) => data);
+          }}
+          errorElement={<ErrorComponent />}
+        />
         <Route path="three" element={<ComponentThree />} />
       </Route>
-      <Route path="/four" element={<ComponentFour />} />
+      <Route
+        path="layout"
+        element={<ComponentForNesting.LayoutMain data="Layout" />}
+      >
+        <Route index element={<ComponentFour />} />
+        <Route
+          path=":number"
+          element={<DynamicSegment />}
+          loader={({ params }) => {
+            return {
+              data: "test",
+              ...params,
+            };
+          }}
+        />
+        <Route path=":number/six" element={<ComponentSix />} />
+        <Route path=":number/six?/seven" element={<SearchParams />} />
+        <Route
+          path=":number/six?/seven/:number2"
+          element={<OptionalSegment />}
+        />
+        <Route path=":number/*" element={<Splat_Navigate />} />
+      </Route>
     </Route>
   ),
   {
@@ -38,19 +80,6 @@ const router = createBrowserRouter(
 );
 
 function App() {
-  useEffect(() => {
-    const fromElements = createRoutesFromElements(
-      /** co-relates with Routes component, returns route config */
-      <Route>
-        <Route path="/" element={<ComponentOne />}>
-          <Route index element={<ComponentTwo />} />
-          <Route path="three" element={<ComponentThree />} />
-        </Route>
-        <Route path="/four" element={<ComponentFour />} />
-      </Route>
-    );
-    console.log(fromElements);
-  }, []);
   return (
     <div className="App">
       <div className="app-component-main-container">

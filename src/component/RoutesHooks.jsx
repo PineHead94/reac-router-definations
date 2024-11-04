@@ -1,17 +1,17 @@
 import { useRoutes } from "react-router-dom";
-import { ComponentOne } from "./ComponentOne";
-import { ComponentFour, ComponentThree, ComponentTwo } from "./Components";
+import { LayoutMain } from "./LayoutMain";
+import { ComponentFour, ComponentThree, LoaderData } from "./Components";
 /** this approach only replaces <Route> components nested inside <Routes /> component , further implementation like use of a router or a  data router remains a developer's choice */
 function RoutesHook() {
   const routesForUseRoutes = useRoutes([
     {
-      element: <ComponentOne /> /** layout */,
+      element: <LayoutMain /> /** layout */,
       path: "/",
       children: [
         /** nested components, routes */
         {
           index: true,
-          element: <ComponentTwo />,
+          element: <LoaderData />,
         },
         {
           path: "three",
@@ -30,8 +30,8 @@ function RoutesHook() {
 /**
 RoutesHook(react component) is equivalent to --
 <Routes>
-    <Route path="/" element={<ComponentOne />}>
-      <Route index element={<ComponentTwo />} />
+    <Route path="/" element={<LayoutMain />}>
+      <Route index element={<LoaderData />} />
       <Route path="three" element={<ComponentThree />} />
     </Route>
       <Route path="/four" element={<ComponentFour />}>
